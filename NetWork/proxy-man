@@ -1,0 +1,54 @@
+#!/bin/bash
+
+# 脚本使用说明
+usage() {
+    echo "用法: source $0 [on|off] 或 . $0 [on|off]"
+    echo "  注意: 必须使用 'source' 或 '.' 命令执行此脚本"
+    echo "  on   - 设置HTTP和HTTPS代理为127.0.0.1:7890"
+    echo "  off  - 取消代理设置"
+    exit 1
+}
+
+# 检查是否通过source或.执行
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    echo "错误: 此脚本必须使用 'source' 或 '.' 命令执行"
+    echo "请使用: source $0 [on|off] 或 . $0 [on|off]"
+    exit 1
+fi
+
+# 检查参数数量
+if [ $# -ne 1 ]; then
+    usage
+fi
+
+case "$1" in
+    on)
+        # 设置代理（同时设置大小写版本，兼容不同程序）
+        export http_proxy="http://127.0.0.1:7890"
+        export HTTP_PROXY="http://127.0.0.1:7890"
+        export https_proxy="http://127.0.0.1:7890"
+        export HTTPS_PROXY="http://127.0.0.1:7890"
+        export ALL_PROXY="http://127.0.0.1:7890"
+        export all_proxy="http://127.0.0.1:7890"
+        
+	git config --global http.proxy "http://127.0.0.1:7890"
+        git config --global https.proxy "http://127.0.0.1:7890"
+	
+	echo "代理已设置为127.0.0.1:7890"
+        
+	;;
+    off)
+        # 取消所有代理设置
+        unset http_proxy HTTP_PROXY https_proxy HTTPS_PROXY ALL_PROXY all_proxy
+        
+	git config --global --unset http.proxy
+        git config --global --unset https.proxy
+	
+	echo "代理设置已取消"
+        ;;
+    *)
+        # 无效参数处理
+        echo "错误: 无效参数 '$1'"
+        usage
+        ;;
+esac

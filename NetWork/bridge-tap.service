@@ -1,0 +1,11 @@
+[Unit]
+Description=Setup Bridge and TAP for Custom Network
+After=network.target
+Requires=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/setup-bridge-tap.sh
+
+[Install]
+WantedBy=multi-user.target
